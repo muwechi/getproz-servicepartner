@@ -25,9 +25,9 @@ jobs:
       KEYSTORE: "../../app/keystores/debug.jks"
       KEYSTORE_PASSWORD: android
       KEY_PASSWORD: android
-#    outputs:
-#      bump_tag: ${{ steps.bump_tag.outputs.new_tag }}
-#      bump_tag_version: ${{ steps.bump_tag.outputs.new_version }}
+    outputs:
+      bump_tag: ${{ steps.bump_tag.outputs.new_tag }}
+      bump_tag_version: ${{ steps.bump_tag.outputs.new_version }}
     steps:
       - name: Fetch Repo HEAD
         uses: actions/checkout@v2
@@ -60,11 +60,27 @@ jobs:
           signingKeyBase64: ${{ env.KEYSTORE }}
           keyStorePassword: ${{ env.KEYSTORE_PASSWORD }}
           keyPassword: ${{ env.KEY_PASSWORD }}
-#        env:
-#          BUILD_TOOLS_VERSION: "29.0.3"
 
       - name: Upload APK
         uses: actions/upload-artifact@v2.2.0
         with:
           name: Release artifact
           path: app/build/outputs/apk/release/app-release*.apk
+
+      - name: Bump version and push tag
+        id: bump_tag
+        uses: mathieudutour/github-tag-action@v4.5
+        with:
+          release_branches: .*
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push APK to Release Tags
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "app/build/outputs/apk/release/app-release*.apk"
+          name: ${{ env.APP_NAME }}-${{ steps.bump_tag.outputs.new_version }}
+          tag: ${{ steps.bump_tag.outputs.new_tag }}
+          token: ${{ env.GITHUB_TOKEN }}
+          allowUpdates: true
+          omitName: false
+          omitBody: false
