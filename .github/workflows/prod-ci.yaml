@@ -1,0 +1,67 @@
+# Workflow name
+name: CI / CD Runs
+on:
+  # When it will be triggered
+  # And in which branch
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+# Where will they run
+jobs:
+  build:
+    name: Setup and Run Gradle Build
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: "GetProz Partner"
+      GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      RELEASE_TYPE: patch
+      KEY_ALIAS: androiddebugkey
+      KEYSTORE: "../../app/keystores/debug.jks"
+      KEYSTORE_PASSWORD: android
+      KEY_PASSWORD: android
+#    outputs:
+#      bump_tag: ${{ steps.bump_tag.outputs.new_tag }}
+#      bump_tag_version: ${{ steps.bump_tag.outputs.new_version }}
+    steps:
+      - name: Fetch Repo HEAD
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java Environment
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 1.8
+
+      ## Build all our Build Types at once ##
+      - name: Build all Android artifacts
+        id: buildAllApks
+        uses: eskatos/gradle-command-action@v1.3.3
+        with:
+          gradle-version: current
+          wrapper-cache-enabled: true
+          dependencies-cache-enabled: true
+          configuration-cache-enabled: true
+          arguments: assembleRelease
+
+      ## Sign our artifact##
+      - name: Sign artifacts
+        id: signArtifact
+        uses: r0adkll/sign-android-release@v1.0.1
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          alias: ${{ env.KEY_ALIAS }}
+          signingKeyBase64: ${{ env.KEYSTORE }}
+          keyStorePassword: ${{ env.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ env.KEY_PASSWORD }}
+#        env:
+#          BUILD_TOOLS_VERSION: "29.0.3"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v2.2.0
+        with:
+          name: Release artifact
+          path: app/build/outputs/apk/release/app-artifact-*.apk
