@@ -72,8 +72,8 @@ public class Config {
     public static final String PROFESSION = "PROFESSION";
     // BASE URL
 
-    public static String BASE_URL = "https://thecodecafe.in/goservices_updated/api/";
-    public static String IMAGE_URL = "https://thecodecafe.in/goservices_updated/"; //
+    public static String BASE_URL = "https://getproz.com/goservices_updated/api/";
+    public static String IMAGE_URL = "https://getproz.com/goservices_updated/";
     public static String Login = BASE_URL + "partnerlogin";
     public static String SignUP = BASE_URL + "partner_register";
 

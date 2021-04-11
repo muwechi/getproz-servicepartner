@@ -38,11 +38,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:id="@+id/view1_signup"
-                android:background="@color/lightgrey"></View>
+                android:background="@color/lightgrey" />
             <EditText
                 android:id="@+id/etmobileno"
                 android:background="@null"
-                android:maxLength="10"
+                android:maxLength="11"
                 android:inputType="number"
                 android:singleLine="true"
                 android:drawableLeft="@drawable/ic_phone"
@@ -62,7 +62,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:id="@+id/view2_signup"
-                android:background="@color/lightgrey"></View>
+                android:background="@color/lightgrey" />
             <EditText
                 android:id="@+id/etemailid"
                 android:background="@null"
@@ -85,7 +85,7 @@
                 android:layout_height="1dp"
                 android:layout_below="@+id/etemailid"
                 android:layout_marginHorizontal="20dp"
-                android:background="@color/lightgrey"></View>
+                android:background="@color/lightgrey" />
             <EditText
                 android:id="@+id/etAddress"
                 android:background="@null"

@@ -10,6 +10,8 @@ import com.google.android.material.tabs.TabLayout;
 import com.getproz.servicepartner.Adapter.PageAdapter;
 import com.getproz.servicepartner.R;
 
+import java.util.Objects;
+
 import static com.getproz.servicepartner.Fragments.LoginFragment.txtSignUp;
 
 public class LoginSignupActivity extends AppCompatActivity {
@@ -26,7 +28,7 @@ public class LoginSignupActivity extends AppCompatActivity {
     }
 
     private void init() {
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
         tabLayout = findViewById(R.id.tablayout);
         viewPager = findViewById(R.id.pager_product);
         tab1 = findViewById(R.id.login);
@@ -34,7 +36,7 @@ public class LoginSignupActivity extends AppCompatActivity {
         txtSignUp=findViewById(R.id.tittie_signin);
         pageAdapter = new PageAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pageAdapter);
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());

@@ -10,6 +10,8 @@ import android.os.StrictMode;
 import com.getproz.servicepartner.Constants.Session_management;
 import com.getproz.servicepartner.R;
 
+import java.util.Objects;
+
 public class Splash extends AppCompatActivity {
 
     public  static int SPLASH_DISPLAY_LENGTH=3000;
@@ -28,7 +30,7 @@ public class Splash extends AppCompatActivity {
                     StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
         }
-        getSupportActionBar().hide();
+        Objects.requireNonNull(getSupportActionBar()).hide();
         sessionManagement=new Session_management(this);
         redirectionScreen();
     }

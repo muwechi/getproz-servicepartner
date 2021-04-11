@@ -93,17 +93,14 @@ public class SignupFragment extends Fragment {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(false);
-        FirebaseInstanceId.getInstance().getInstanceId()
-                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                        if (!task.isSuccessful()) {
-                            token = "";
-                            return;
-                        }
-                        token = Objects.requireNonNull(task.getResult()).getToken();
-                    }
-                });
+//        FirebaseInstanceId.getInstance().getInstanceId()
+//                .addOnCompleteListener(task -> {
+//                    if (!task.isSuccessful()) {
+//                        token = "";
+//                        return;
+//                    }
+//                    token = Objects.requireNonNull(task.getResult()).getToken();
+//                });
 
         androiId = Settings.Secure.getString(getActivity().getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -130,29 +127,26 @@ public class SignupFragment extends Fragment {
             //  categryUrl();
             maincateUrl();
         }
-        btnSignUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (name.getText().toString().trim().equalsIgnoreCase("")) {
-                    Toast.makeText(getActivity(), "Full name required!", Toast.LENGTH_SHORT).show();
-                } else if (phone.getText().toString().trim().equalsIgnoreCase("")) {
-                    Toast.makeText(getActivity(), "Mobile Number required!", Toast.LENGTH_SHORT).show();
-                } else if (phone.getText().toString().trim().length() < 9) {
-                    Toast.makeText(getActivity(), "Valid Mobile Number required!", Toast.LENGTH_SHORT).show();
-                } else if (email.getText().toString().trim().equalsIgnoreCase("")) {
-                    Toast.makeText(getActivity(), "Email Id required!", Toast.LENGTH_SHORT).show();
-                }  else if(!email.getText().toString().trim().matches(emailPattern)){
-                    Toast.makeText(getActivity(),"Valid Email id required!",Toast.LENGTH_SHORT).show(); }
-                else if (etrange.getText().toString().trim().equalsIgnoreCase("")) {
-                    Toast.makeText(getActivity(), "Delivery Range required!", Toast.LENGTH_SHORT).show(); }
-                else if (password.getText().toString().trim().equalsIgnoreCase("")) {
-                    Toast.makeText(getActivity(), "Password required!", Toast.LENGTH_SHORT).show();
-                } else if (!isOnline()) {
-                    Toast.makeText(getActivity(), "Please check your Internet Connection!", Toast.LENGTH_SHORT).show();
-                } else {
-                    progressDialog.show();
-                    SignupUrl();
-                }
+        btnSignUp.setOnClickListener(v -> {
+            if (name.getText().toString().trim().equalsIgnoreCase("")) {
+                Toast.makeText(getActivity(), "Full Name required!", Toast.LENGTH_SHORT).show();
+            } else if (phone.getText().toString().trim().equalsIgnoreCase("")) {
+                Toast.makeText(getActivity(), "Mobile Number required!", Toast.LENGTH_SHORT).show();
+            } else if (phone.getText().toString().trim().length() < 11) {
+                Toast.makeText(getActivity(), "Valid Mobile Number required!", Toast.LENGTH_SHORT).show();
+            } else if (email.getText().toString().trim().equalsIgnoreCase("")) {
+                Toast.makeText(getActivity(), "Email Address required!", Toast.LENGTH_SHORT).show();
+            }  else if(!email.getText().toString().trim().matches(emailPattern)){
+                Toast.makeText(getActivity(),"Valid Email Address required!",Toast.LENGTH_SHORT).show();
+            } else if (etrange.getText().toString().trim().equalsIgnoreCase("")) {
+                Toast.makeText(getActivity(), "Delivery Range required!", Toast.LENGTH_SHORT).show();
+            } else if (password.getText().toString().trim().equalsIgnoreCase("")) {
+                Toast.makeText(getActivity(), "Password required!", Toast.LENGTH_SHORT).show();
+            } else if (!isOnline()) {
+                Toast.makeText(getActivity(), "Please check your Internet Connection!", Toast.LENGTH_SHORT).show();
+            } else {
+                progressDialog.show();
+                SignupUrl();
             }
         });
         txtogin.setOnClickListener(new View.OnClickListener() {
@@ -194,57 +188,54 @@ public class SignupFragment extends Fragment {
     private void hitService(final String token,final String city_id,final String category_id,final String maincategory_id,final String child_category_id) {
 
         progressDialog.show();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, SignUP, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("SignUP",response);
-                progressDialog.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String status = jsonObject.getString("status");
-                    String msg = jsonObject.getString("message");
-                    if (status.equalsIgnoreCase("1")){
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, SignUP, response -> {
+            Log.d("SignUP",response);
+            progressDialog.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String status = jsonObject.getString("status");
+                String msg = jsonObject.getString("message");
+                if (status.equalsIgnoreCase("1")){
 
-                        JSONObject resultObj = jsonObject.getJSONObject("data");
-                        String user_id = resultObj.getString("partner_id");
-                        String mobile = resultObj.getString("partner_phone");
-                        String partner_profesion = resultObj.getString("partner_profesion");
-                        String email = resultObj.getString("partner_email");
-                        String name = resultObj.getString("partner_name");
-                        String user_status = resultObj.getString("status");
-                        String adminID = resultObj.getString("device_id");
-                        String user_image= resultObj.getString("partner_image");
-                        String lat = resultObj.getString("lat");
-                        String lng = resultObj.getString("lng");
-                        String delivery_range = resultObj.getString("range");
-                        Session_management sessionManagement = new Session_management(getActivity());
-                        sessionManagement.createLoginSession(user_id, email, name, mobile, user_image,password.getText().toString(),lat,lng,delivery_range,partner_profesion);
+                    JSONObject resultObj = jsonObject.getJSONObject("data");
+                    String user_id = resultObj.getString("partner_id");
+                    String mobile = resultObj.getString("partner_phone");
+                    String partner_profesion = resultObj.getString("partner_profesion");
+                    String email = resultObj.getString("partner_email");
+                    String name = resultObj.getString("partner_name");
+                    String user_status = resultObj.getString("status");
+                    String adminID = resultObj.getString("device_id");
+                    String user_image= resultObj.getString("partner_image");
+                    String lat = resultObj.getString("lat");
+                    String lng = resultObj.getString("lng");
+                    String delivery_range = resultObj.getString("range");
+                    Session_management sessionManagement = new Session_management(getActivity());
+                    sessionManagement.createLoginSession(user_id, email, name, mobile, user_image,password.getText().toString(),lat,lng,delivery_range,partner_profesion);
 
-                        SharedPreferences.Editor editor = getActivity().getSharedPreferences(MyPrefreance,MODE_PRIVATE).edit();
-                        editor.putString(USER_ID,user_id);
-                        editor.putString(MOBILE,mobile);
-                        editor.putString(EMAIL,email);
-                        editor.putString(NAME,name);
-                        editor.putString(USER_STATUS,user_status);
-                        editor.putString(DEVICE_ID,adminID);
-                        editor.putString(PASSWORD,password.getText().toString());
-                        editor.apply();
-                        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-                        Intent intent= new Intent(getActivity(), AfterGstPage.class);
-                        // intent.putExtra("MobNo",mobile);
-                        startActivity(intent);
+                    SharedPreferences.Editor editor = getActivity().getSharedPreferences(MyPrefreance,MODE_PRIVATE).edit();
+                    editor.putString(USER_ID,user_id);
+                    editor.putString(MOBILE,mobile);
+                    editor.putString(EMAIL,email);
+                    editor.putString(NAME,name);
+                    editor.putString(USER_STATUS,user_status);
+                    editor.putString(DEVICE_ID,adminID);
+                    editor.putString(PASSWORD,password.getText().toString());
+                    editor.apply();
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                    Intent intent= new Intent(getActivity(), AfterGstPage.class);
+                    // intent.putExtra("MobNo",mobile);
+                    startActivity(intent);
 
-                    }else {
-                        // JSONObject resultObj = jsonObject.getJSONObject("results");
-                        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+                }else {
+                    // JSONObject resultObj = jsonObject.getJSONObject("results");
+                    Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
 
-                    }
-                    progressDialog.dismiss();
-                } catch (JSONException e) {
-                    e.printStackTrace();
                 }
                 progressDialog.dismiss();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            progressDialog.dismiss();
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
@@ -255,16 +246,16 @@ public class SignupFragment extends Fragment {
                 HashMap<String,String> param = new HashMap<>();
 
                 param.put("device_id",token);
-                param.put("city_id",city_id);
+                param.put("city__id",city_id);
                 param.put("category_id",maincategory_id);
                 param.put("sub_cat_id",category_id);
-                param.put("sub_child_cat_id",child_category_id);
+                param.put("child_cat_id",child_category_id);
                 param.put("partner_name",name.getText().toString());
                 param.put("partner_phone",phone.getText().toString());
-                param.put("partner_profesion","abc");
+                param.put("partner_profesion", etProfression.getText().toString());
                 param.put("partner_email",email.getText().toString());
                 param.put("partner_password",password.getText().toString());
-                param.put("partner_add",etAddress.getText().toString());
+                param.put("address",etAddress.getText().toString());
                 param.put("delivery_range",etrange.getText().toString());
 
              /*   Log.d("fghj",city_id);
@@ -369,57 +360,52 @@ public class SignupFragment extends Fragment {
     private void cityUrl() {
         // progressDialog.show();
         citylist.clear();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, CityListUrl, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("cityyyyyyyy", response);
-                progressDialog.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String status = jsonObject.getString("status");
-                    String msg = jsonObject.getString("message");
-                    if (status.equals("1")) {
-                        citylist.clear();
-                        JSONArray jsonArray = jsonObject.getJSONArray("data");
-                        for (int i = 0; i < jsonArray.length(); i++) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, CityListUrl, response -> {
+            Log.d("cityyyyyyyy", response);
+            progressDialog.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String status = jsonObject.getString("status");
+                String msg = jsonObject.getString("message");
 
-                            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                            city_id = jsonObject1.getString("city_id");
-                            String city_name = jsonObject1.getString("city_name");
+                if (status.equals("1")) {
+                    citylist.clear();
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                    for (int i = 0; i < jsonArray.length(); i++) {
 
-                            //    recyclerViewCity.setVisibility(View.VISIBLE);
-                            SearchModel cs = new SearchModel(city_id, city_name);
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                        city_id = jsonObject1.getString("city_id");
+                        String city_name = jsonObject1.getString("city_name");
 
-                            citylist.add(cs);
-                        }
-                        progressDialog.dismiss();
+                        //    recyclerViewCity.setVisibility(View.VISIBLE);
+                        SearchModel cs = new SearchModel(city_id, city_name);
 
-                        CustomAdapter customAdapter = new CustomAdapter(getContext(), citylist);
-                        city.setAdapter(customAdapter);
-                        city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                            @Override
-                            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                cityName=citylist.get(i).getpNAme();
-                                city_id=citylist.get(i).getId();
-
-                            }
-
-                            @Override
-                            public void onNothingSelected(AdapterView<?> adapterView) {}
-                        });
-                    } else {
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                        citylist.add(cs);
                     }
                     progressDialog.dismiss();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                    CustomAdapter customAdapter = new CustomAdapter(getContext(), citylist);
+                    city.setAdapter(customAdapter);
+                    city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            cityName=citylist.get(i).getpNAme();
+                            city_id=citylist.get(i).getId();
+
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {}
+                    });
+                } else {
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-            }
+            progressDialog.dismiss();
+        }, error -> {
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
@@ -437,61 +423,37 @@ public class SignupFragment extends Fragment {
     private void categryUrl() {
         // progressDialog.show();
         catelist.clear();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, CategyList, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Log.d("cityyyyyyyy", response);
-                progressDialog.dismiss();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String status = jsonObject.getString("status");
-                    String msg = jsonObject.getString("message");
-                    if (status.equals("1")) {
-                        catelist.clear();
-                        JSONArray jsonArray = jsonObject.getJSONArray("data");
-                        for (int i = 0; i < jsonArray.length(); i++) {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, CategyList, response -> {
+            Log.d("cityyyyyyyy", response);
+            progressDialog.dismiss();
+            try {
+                JSONObject jsonObject = new JSONObject(response);
+                String status = jsonObject.getString("status");
+                String msg = jsonObject.getString("message");
+                if (status.equals("1")) {
+                    catelist.clear();
+                    JSONArray jsonArray = jsonObject.getJSONArray("data");
+                    for (int i = 0; i < jsonArray.length(); i++) {
 
-                            JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                            category_id = jsonObject1.getString("sub_category_id");
-                            String child_name = jsonObject1.getString("sub_category_name");
+                        JSONObject jsonObject1 = jsonArray.getJSONObject(i);
+                        category_id = jsonObject1.getString("sub_category_id");
+                        String child_name = jsonObject1.getString("sub_category_name");
 
-                            //    recyclerViewCity.setVisibility(View.VISIBLE);
-                            SearchModel cs1 = new SearchModel(category_id, child_name);
-                            catelist.add(cs1);
+                        //    recyclerViewCity.setVisibility(View.VISIBLE);
+                        SearchModel cs1 = new SearchModel(category_id, child_name);
+                        catelist.add(cs1);
 
-                            CustomAdapter customAdapter1 = new CustomAdapter(getContext(), catelist);
-                            categry_spinner.setAdapter(customAdapter1);
-                            categry_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                                @Override
-                                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                                    try{
-                                        categoryName=catelist.get(i).getpNAme();
-                                        category_id=catelist.get(i).getId();
-                                        ChildCateUrl();
-                                        childcatespinner.setVisibility(View.VISIBLE);
-                                        // Log.d("fcgv",catelist.get(i).getId());
-                                    }catch (Exception e){
-                                    }
-                                }
-
-                                @Override
-                                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                                }
-                            });
-                        }
-
-                    } else {
-                        childcatespinner.setVisibility(View.GONE);
                         CustomAdapter customAdapter1 = new CustomAdapter(getContext(), catelist);
                         categry_spinner.setAdapter(customAdapter1);
                         categry_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                             @Override
                             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                                 try{
-                                    categoryName="";
-                                    category_id="";
-
+                                    categoryName=catelist.get(i).getpNAme();
+                                    category_id=catelist.get(i).getId();
+                                    ChildCateUrl();
+                                    childcatespinner.setVisibility(View.VISIBLE);
+                                    // Log.d("fcgv",catelist.get(i).getId());
                                 }catch (Exception e){
                                 }
                             }
@@ -501,14 +463,35 @@ public class SignupFragment extends Fragment {
 
                             }
                         });
-                        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                     }
-                    progressDialog.dismiss();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                } else {
+                    childcatespinner.setVisibility(View.GONE);
+                    CustomAdapter customAdapter1 = new CustomAdapter(getContext(), catelist);
+                    categry_spinner.setAdapter(customAdapter1);
+                    categry_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                            try{
+                                categoryName="";
+                                category_id="";
+
+                            }catch (Exception e){
+                            }
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> adapterView) {
+
+                        }
+                    });
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+            progressDialog.dismiss();
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
